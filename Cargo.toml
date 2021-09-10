@@ -1,6 +1,5 @@
 [package]
 name = "tts_subsystem"
-authors="the yggdrasil contributors"
 version = "0.1.0"
 edition = "2018"
 
