@@ -1,3 +1,6 @@
+use speech_dispatcher_sys;
+use thiserror::Error;
+pub mod  errors;
 #[cfg(test)]
 mod tests {
     #[test]
