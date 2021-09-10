@@ -1,4 +1,4 @@
-use thiserror::Error;
+//use thiserror::derive_error;
 pub mod error {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
     #[non_exhaustive]
@@ -13,8 +13,8 @@ pub mod error {
         SpeechCancelationError,
         #[error("error pausing or resuming speech")]
         TTSPauseResumeError,
-        #[error("problems setting a speech param: {}", param)]
-        SynthParamError(param),
+        #[error("problems setting a speech param")]
+        SynthParamError,
         #[error("a weird unknown error")]
         Unknown,
     }
