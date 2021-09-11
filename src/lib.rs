@@ -1,4 +1,4 @@
-
+pub mod tts;
 pub mod  errors;
 #[cfg(test)]
 mod tests {
