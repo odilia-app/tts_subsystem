@@ -1,8 +1,7 @@
-//use thiserror::derive_error;
-pub mod error {
+
     #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
     #[non_exhaustive]
-    pub enum SpeechError {
+    pub enum Error {
         #[error("unable to initialise speech dispatcher")]
         InitError,
         #[error("error synthesizing text")]
@@ -18,4 +17,3 @@ pub mod error {
         #[error("a weird unknown error")]
         Unknown,
     }
-}
