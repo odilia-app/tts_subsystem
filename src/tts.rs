@@ -40,15 +40,13 @@ impl Speaker {
         Ok(speaker)
     }
     pub fn speak_text(&self, text: &str) -> Result<(), Error> {
-        let c_text=CString::new(text).expect("slice shouldn't contain null bytes");
+        let c_text = CString::new(text).expect("slice shouldn't contain null bytes");
         let result;
-        unsafe{
-            result=spd::spd_say(self.con, Priority::Text as u32, c_text.as_ptr().cast())
-        };
-        if result == 0{
+        unsafe { result = spd::spd_say(self.con, Priority::Text as u32, c_text.as_ptr().cast()) };
+        if result == 0 {
             return Err(Error::SpeechSynthError);
         }
-    Ok(())    
+        Ok(())
     }
 }
 impl Drop for Speaker {
