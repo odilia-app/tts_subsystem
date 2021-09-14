@@ -23,7 +23,7 @@ pub struct Speaker {
     con: *mut spd::SPDConnection,
 }
 impl Speaker {
-    pub fn init(app_name: &str) -> Result<Speaker, Error> {
+    pub fn new(app_name: &str) -> Result<Speaker, Error> {
         let name = CString::new(app_name).expect("name should not contain null bytes");
         let con = unsafe {
             spd::spd_open(
@@ -43,6 +43,18 @@ impl Speaker {
         let c_text = CString::new(text).expect("slice shouldn't contain null bytes");
         let result;
         unsafe { result = spd::spd_say(self.con, Priority::Text as u32, c_text.as_ptr().cast()) };
+        if result == 0 {
+            return Err(Error::SpeechSynthError);
+        }
+        Ok(())
+    }
+    pub fn speak_text_with_priority(&self, text: &str, priority: Priority) -> Result<(), Error> {
+        let text = CString::new(text).expect("slice shouldn't contain null bytes");
+        let priority = priority as u32;
+        let result;
+        unsafe {
+            result = spd::spd_say(self.con, priority, text.as_ptr().cast());
+        }
         if result == 0 {
             return Err(Error::SpeechSynthError);
         }
