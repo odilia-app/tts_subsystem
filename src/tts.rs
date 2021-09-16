@@ -1,6 +1,6 @@
 use crate::Error;
 use speech_dispatcher_sys as spd;
-use std::{ffi::CString, ptr};
+use std::{ffi::CString, fmt, ptr};
 //enums for tts and speech dispatcher specific things
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u32)]
@@ -60,38 +60,30 @@ impl Speaker {
         }
         Ok(())
     }
-    pub fn stop(&self)->Result<(), Error>{
-        let res=unsafe{
-            spd::spd_stop(self.con)
-        };
-        if res==-1{
+    pub fn stop(&self) -> Result<(), Error> {
+        let res = unsafe { spd::spd_stop(self.con) };
+        if res == -1 {
             return Err(Error::StopSpeechError);
         }
-    Ok(())
+        Ok(())
     }
-    pub fn pause(&self)->Result<(), Error>{
-        let res=unsafe{
-            spd::spd_pause(self.con)
-        };
-        if res==-1{
+    pub fn pause(&self) -> Result<(), Error> {
+        let res = unsafe { spd::spd_pause(self.con) };
+        if res == -1 {
             return Err(Error::TTSPauseResumeError);
         }
         Ok(())
     }
-    pub fn resume(&self)->Result<(), Error>{
-        let res=unsafe{
-            spd::spd_resume(self.con)
-        };
-        if res==-1{
+    pub fn resume(&self) -> Result<(), Error> {
+        let res = unsafe { spd::spd_resume(self.con) };
+        if res == -1 {
             return Err(Error::TTSPauseResumeError);
         }
         Ok(())
     }
-    pub fn cancel(&self)->Result<(), Error>{
-        let res=unsafe{
-            spd::spd_cancel(self.con)
-        };
-        if res==-1{
+    pub fn cancel(&self) -> Result<(), Error> {
+        let res = unsafe { spd::spd_cancel(self.con) };
+        if res == -1 {
             return Err(Error::SpeechCancelationError);
         }
         Ok(())
@@ -102,5 +94,11 @@ impl Drop for Speaker {
         unsafe {
             spd::spd_close(self.con);
         }
+    }
+}
+
+impl fmt::Write for Speaker {
+    fn write_str(&mut self, text: &str) -> fmt::Result {
+        self.speak_text(text).map_err(|_| fmt::Error)
     }
 }
