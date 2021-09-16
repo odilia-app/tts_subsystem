@@ -40,10 +40,10 @@ impl Speaker {
         Ok(speaker)
     }
     pub fn speak_text(&self, text: &str) -> Result<(), Error> {
-        let c_text = CString::new(text).expect("slice shouldn't contain null bytes");
+        let text = CString::new(text).expect("slice shouldn't contain null bytes");
         let result;
-        unsafe { result = spd::spd_say(self.con, Priority::Text as u32, c_text.as_ptr().cast()) };
-        if result == 0 {
+        unsafe { result = spd::spd_say(self.con, Priority::Text as u32, text.as_ptr().cast()) };
+        if result == -1 {
             return Err(Error::SpeechSynthError);
         }
         Ok(())
@@ -55,8 +55,44 @@ impl Speaker {
         unsafe {
             result = spd::spd_say(self.con, priority, text.as_ptr().cast());
         }
-        if result == 0 {
+        if result == -1 {
             return Err(Error::SpeechSynthError);
+        }
+        Ok(())
+    }
+    pub fn stop(&self)->Result<(), Error>{
+        let res=unsafe{
+            spd::spd_stop(self.con)
+        };
+        if res==-1{
+            return Err(Error::StopSpeechError);
+        }
+    Ok(())
+    }
+    pub fn pause(&self)->Result<(), Error>{
+        let res=unsafe{
+            spd::spd_pause(self.con)
+        };
+        if res==-1{
+            return Err(Error::TTSPauseResumeError);
+        }
+        Ok(())
+    }
+    pub fn resume(&self)->Result<(), Error>{
+        let res=unsafe{
+            spd::spd_resume(self.con)
+        };
+        if res==-1{
+            return Err(Error::TTSPauseResumeError);
+        }
+        Ok(())
+    }
+    pub fn cancel(&self)->Result<(), Error>{
+        let res=unsafe{
+            spd::spd_cancel(self.con)
+        };
+        if res==-1{
+            return Err(Error::SpeechCancelationError);
         }
         Ok(())
     }
