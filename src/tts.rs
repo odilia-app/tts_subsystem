@@ -39,16 +39,7 @@ impl Speaker {
         let speaker = Speaker { con };
         Ok(speaker)
     }
-    pub fn speak_text(&self, text: &str) -> Result<(), Error> {
-        let text = CString::new(text).expect("slice shouldn't contain null bytes");
-        let result;
-        unsafe { result = spd::spd_say(self.con, Priority::Text as u32, text.as_ptr().cast()) };
-        if result == -1 {
-            return Err(Error::SpeechSynthError);
-        }
-        Ok(())
-    }
-    pub fn speak_text_with_priority(&self, text: &str, priority: Priority) -> Result<(), Error> {
+    pub fn speak_text(&self, text: &str, priority: Priority) -> Result<(), Error> {
         let text = CString::new(text).expect("slice shouldn't contain null bytes");
         let priority = priority as u32;
         let result;
@@ -99,6 +90,7 @@ impl Drop for Speaker {
 
 impl fmt::Write for Speaker {
     fn write_str(&mut self, text: &str) -> fmt::Result {
-        self.speak_text(text).map_err(|_| fmt::Error)
+        self.speak_text(text, Priority::Text)
+            .map_err(|_| fmt::Error)
     }
 }
