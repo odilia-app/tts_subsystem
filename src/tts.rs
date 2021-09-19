@@ -40,7 +40,7 @@ pub struct Speaker {
 
 impl Speaker {
     pub fn new(app_name: &str) -> Result<Speaker, Error> {
-        let name = CString::new(app_name).expect("name should not contain null bytes");
+        let name = CString::new(app_name).expect("name shouldn't contain null bytes");
         let con = unsafe {
             spd::spd_open(
                 name.as_ptr().cast(),
@@ -55,7 +55,7 @@ impl Speaker {
     }
 
     pub fn speak(&self, priority: Priority, text: &str) -> Result<(), Error> {
-        let text = CString::new(text).expect("slice shouldn't contain null bytes");
+        let text = CString::new(text).expect("text shouldn't contain null bytes");
         let priority = priority as u32;
         let res = unsafe { spd::spd_say(self.con.as_ptr(), priority, text.as_ptr().cast()) };
         spd_return_err_if_fail!(res, SpeechSynthError)
