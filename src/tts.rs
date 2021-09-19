@@ -1,6 +1,10 @@
 use crate::Error;
 use speech_dispatcher_sys as spd;
-use std::{ffi::CString, fmt, ptr};
+use std::{
+    ffi::CString,
+    fmt,
+    ptr::{self, NonNull},
+};
 
 //enums for tts and speech dispatcher specific things
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -31,7 +35,7 @@ macro_rules! spd_return_err_if_fail {
 
 #[derive(Debug, PartialEq)]
 pub struct Speaker {
-    con: *mut spd::SPDConnection,
+    con: NonNull<spd::SPDConnection>,
 }
 
 impl Speaker {
@@ -45,37 +49,35 @@ impl Speaker {
                 ConnectionMode::Single as u32,
             )
         };
-        if con.is_null() {
-            Err(Error::InitError)
-        } else {
-            Ok(Speaker { con })
-        }
+        NonNull::new(con)
+            .map(|con| Self { con })
+            .ok_or(Error::InitError)
     }
 
     pub fn speak(&self, priority: Priority, text: &str) -> Result<(), Error> {
         let text = CString::new(text).expect("slice shouldn't contain null bytes");
         let priority = priority as u32;
-        let res = unsafe { spd::spd_say(self.con, priority, text.as_ptr().cast()) };
+        let res = unsafe { spd::spd_say(self.con.as_ptr(), priority, text.as_ptr().cast()) };
         spd_return_err_if_fail!(res, SpeechSynthError)
     }
 
     pub fn stop(&self) -> Result<(), Error> {
-        let res = unsafe { spd::spd_stop(self.con) };
+        let res = unsafe { spd::spd_stop(self.con.as_ptr()) };
         spd_return_err_if_fail!(res, StopSpeechError)
     }
 
     pub fn pause(&self) -> Result<(), Error> {
-        let res = unsafe { spd::spd_pause(self.con) };
+        let res = unsafe { spd::spd_pause(self.con.as_ptr()) };
         spd_return_err_if_fail!(res, TTSPauseResumeError)
     }
 
     pub fn resume(&self) -> Result<(), Error> {
-        let res = unsafe { spd::spd_resume(self.con) };
+        let res = unsafe { spd::spd_resume(self.con.as_ptr()) };
         spd_return_err_if_fail!(res, TTSPauseResumeError)
     }
 
     pub fn cancel(&self) -> Result<(), Error> {
-        let res = unsafe { spd::spd_cancel(self.con) };
+        let res = unsafe { spd::spd_cancel(self.con.as_ptr()) };
         spd_return_err_if_fail!(res, SpeechCancelationError)
     }
 }
@@ -83,7 +85,7 @@ impl Speaker {
 impl Drop for Speaker {
     fn drop(&mut self) {
         unsafe {
-            spd::spd_close(self.con);
+            spd::spd_close(self.con.as_ptr());
         }
     }
 }
