@@ -61,6 +61,28 @@ impl Speaker {
         spd_return_err_if_fail!(res, SpeechSynthError)
     }
 
+    pub fn speak_char(&self, priority: Priority, c: char) -> Result<(), Error> {
+        // I'd love to ues spd_wchar to make this easier, but it seems that it doesn't work, at
+        // least not with espeak-ng. (mcb2003 <mikey@blindcomputing.org>)
+
+        // This is 4-bytes for the char plus a null terminator
+        let mut buf = [0u8; 5];
+        // Encode the character into `buf` as UTF8.
+        // We don't need to manually terminate this because `buf` was pre-filled with zeros.
+        c.encode_utf8(&mut buf);
+
+        let priority = priority as u32;
+        let res = unsafe { spd::spd_char(self.con.as_ptr(), priority, buf.as_ptr().cast()) };
+        spd_return_err_if_fail!(res, SpeechSynthError)
+    }
+
+    pub fn speak_key(&self, priority: Priority, key_name: &str) -> Result<(), Error> {
+        let key_name = CString::new(key_name).expect("key_name shouldn't contain null bytes");
+        let priority = priority as u32;
+        let res = unsafe { spd::spd_key(self.con.as_ptr(), priority, key_name.as_ptr().cast()) };
+        spd_return_err_if_fail!(res, SpeechSynthError)
+    }
+
     pub fn stop(&self) -> Result<(), Error> {
         let res = unsafe { spd::spd_stop(self.con.as_ptr()) };
         spd_return_err_if_fail!(res, StopSpeechError)
