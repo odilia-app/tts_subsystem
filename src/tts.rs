@@ -66,8 +66,18 @@ impl Speaker {
         spd_return_err_if_fail!(res, StopSpeechError)
     }
 
+    pub fn stop_all(&self) -> Result<(), Error> {
+        let res = unsafe { spd::spd_stop_all(self.con.as_ptr()) };
+        spd_return_err_if_fail!(res, StopSpeechError)
+    }
+
     pub fn pause(&self) -> Result<(), Error> {
         let res = unsafe { spd::spd_pause(self.con.as_ptr()) };
+        spd_return_err_if_fail!(res, TTSPauseResumeError)
+    }
+
+    pub fn pause_all(&self) -> Result<(), Error> {
+        let res = unsafe { spd::spd_pause_all(self.con.as_ptr()) };
         spd_return_err_if_fail!(res, TTSPauseResumeError)
     }
 
@@ -76,8 +86,18 @@ impl Speaker {
         spd_return_err_if_fail!(res, TTSPauseResumeError)
     }
 
+    pub fn resume_all(&self) -> Result<(), Error> {
+        let res = unsafe { spd::spd_resume_all(self.con.as_ptr()) };
+        spd_return_err_if_fail!(res, TTSPauseResumeError)
+    }
+
     pub fn cancel(&self) -> Result<(), Error> {
         let res = unsafe { spd::spd_cancel(self.con.as_ptr()) };
+        spd_return_err_if_fail!(res, SpeechCancelationError)
+    }
+
+    pub fn cancel_all(&self) -> Result<(), Error> {
+        let res = unsafe { spd::spd_cancel_all(self.con.as_ptr()) };
         spd_return_err_if_fail!(res, SpeechCancelationError)
     }
 }
