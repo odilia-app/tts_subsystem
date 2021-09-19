@@ -1,5 +1,5 @@
 pub mod tts;
-pub use tts::Speaker;
+pub use tts::{Priority, Speaker};
 mod errors;
 pub use errors::Error;
 #[cfg(test)]
