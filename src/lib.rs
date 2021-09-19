@@ -1,3 +1,4 @@
+mod iter;
 pub mod tts;
 pub use tts::{Priority, Speaker};
 mod errors;

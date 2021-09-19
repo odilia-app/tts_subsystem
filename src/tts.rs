@@ -1,4 +1,4 @@
-use crate::Error;
+use crate::{iter, Error};
 use speech_dispatcher_sys as spd;
 use std::{
     ffi::CString,
@@ -121,6 +121,15 @@ impl Speaker {
     pub fn cancel_all(&self) -> Result<(), Error> {
         let res = unsafe { spd::spd_cancel_all(self.con.as_ptr()) };
         spd_return_err_if_fail!(res, SpeechCancelationError)
+    }
+
+    pub fn output_modules(&self) -> Result<iter::OutputModuleIter, Error> {
+        let res = unsafe { spd::spd_list_modules(self.con.as_ptr()) };
+        if res.is_null() {
+            Err(Error::ListModulesError)
+        } else {
+            Ok(unsafe { iter::OutputModuleIter::new(res) })
+        }
     }
 }
 
