@@ -13,6 +13,10 @@ pub enum Error {
     TTSPauseResumeError,
     #[error("problems setting a speech param")]
     SynthParamError,
+    #[error("Could not retrieve list of output modules")]
+    ListModulesError,
+    #[error("Could not retrieve list of synthesis voices")]
+    ListSynthesisVoicesError,
     #[error("a weird unknown error")]
     Unknown,
 }

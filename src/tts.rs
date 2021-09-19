@@ -128,6 +128,12 @@ impl Speaker {
             .ok_or(Error::ListModulesError)?;
         Ok(iter::OutputModuleIter::new(res))
     }
+
+    pub fn synthesis_voices(&self) -> Result<iter::SynthesisVoiceIter, Error> {
+        let res = NonNull::new(unsafe { spd::spd_list_synthesis_voices(self.con.as_ptr()) })
+            .ok_or(Error::ListSynthesisVoicesError)?;
+        Ok(iter::SynthesisVoiceIter::new(res))
+    }
 }
 
 impl Drop for Speaker {

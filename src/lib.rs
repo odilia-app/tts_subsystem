@@ -3,6 +3,9 @@ pub mod tts;
 pub use tts::{Priority, Speaker};
 mod errors;
 pub use errors::Error;
+mod voice;
+pub use voice::Voice;
+
 #[cfg(test)]
 mod tests {
     use super::*;
