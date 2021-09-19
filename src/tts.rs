@@ -124,12 +124,9 @@ impl Speaker {
     }
 
     pub fn output_modules(&self) -> Result<iter::OutputModuleIter, Error> {
-        let res = unsafe { spd::spd_list_modules(self.con.as_ptr()) };
-        if res.is_null() {
-            Err(Error::ListModulesError)
-        } else {
-            Ok(unsafe { iter::OutputModuleIter::new(res) })
-        }
+        let res = NonNull::new(unsafe { spd::spd_list_modules(self.con.as_ptr()) })
+            .ok_or(Error::ListModulesError)?;
+        Ok(iter::OutputModuleIter::new(res))
     }
 }
 
