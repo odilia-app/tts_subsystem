@@ -134,7 +134,7 @@ impl Speaker {
             .ok_or(Error::ListSynthesisVoicesError)?;
         Ok(iter::SynthesisVoiceIter::new(res))
     }
-        pub fn rate(&self) -> i32 {
+    pub fn rate(&self) -> i32 {
         let res = unsafe { spd::spd_get_voice_rate(self.con.as_ptr()) };
         res
     }
