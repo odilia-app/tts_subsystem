@@ -161,7 +161,6 @@ impl Speaker {
         let res = unsafe { spd::spd_set_voice_pitch(self.con.as_mut(), value) };
         spd_return_err_if_fail!(res, SynthParamError)
     }
-    
     pub fn set_pitch_range(&mut self, value: i32) -> Result<(), Error> {
         let res = unsafe { spd::spd_set_voice_pitch_range(self.con.as_mut(), value) };
         spd_return_err_if_fail!(res, SynthParamError)
@@ -175,7 +174,9 @@ impl Drop for Speaker {
         }
     }
 }
-
+unsafe impl Send for Speaker {
+    
+}
 impl fmt::Write for Speaker {
     fn write_str(&mut self, text: &str) -> fmt::Result {
         self.speak(Priority::Text, text).map_err(|_| fmt::Error)
